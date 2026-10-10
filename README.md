@@ -1,6 +1,10 @@
-# Image Harvester v0.1.0 — حصّاد الصور
+# Image Harvester v0.1.1 — حصّاد الصور
 
-تطبيق لسطح مكتب Ubuntu/Linux لاستخراج صور صفحات الويب والمواقع **فقط**، دون حفظ نسخ من صفحات المواقع. مصمم ليعمل على أجهزة ذات موارد محدودة، ويستخدم Python القياسي وTkinter دون Playwright أو Chromium.
+تطبيق لسطح مكتب Ubuntu/Linux لاستخراج صور صفحات الويب والمواقع **فقط**، دون حفظ نسخ من صفحات المواقع. مصمم ليعمل على أجهزة ذات موارد محدودة، ويستخدم Python القياسي وGTK3/Pango دون Playwright أو Chromium.
+
+## الواجهة العربية
+
+تُعرض العربية عبر GTK3/Pango باتجاه RTL أصلي، بينما تبقى روابط المواقع ومسارات الملفات LTR، دون قلب النصوص يدويًا.
 
 ## إمكانات الإصدار
 
@@ -13,12 +17,12 @@
 
 ## التثبيت على Ubuntu 24.04 LTS (الخيار الأسهل)
 
-1. نزّل `image-harvester_0.1.0-1_all.deb`.
+1. نزّل `image-harvester_0.1.1-1_all.deb`.
 2. افتح الطرفية في المجلد الذي يحتوي على الملف (عادة `~/Downloads`):
 
    ```bash
    cd ~/Downloads
-   sudo apt install ./image-harvester_0.1.0-1_all.deb
+   sudo apt install ./image-harvester_0.1.1-1_all.deb
    ```
 
 3. شغّل التطبيق من قائمة التطبيقات باسم **حصّاد الصور** أو من الطرفية:
@@ -27,14 +31,14 @@
    image-harvester
    ```
 
-`apt` سيقوم بتثبيت `python3-tk` إذا لم تكن مثبتة. لا يؤثر ذلك في HTTrack المثبت مسبقًا.
+`apt` يثبّت GTK3/PyGObject عند الحاجة ولا حاجة إلى `pip`. لا يؤثر ذلك في HTTrack المثبت مسبقًا.
 
 ## التشغيل من المصدر دون تثبيت حزمة .deb
 
 ```bash
-sudo apt install python3-tk
-unzip Image-Harvester-v0.1.0-source.zip
-cd Image-Harvester-v0.1.0
+sudo apt install python3-gi gir1.2-gtk-3.0
+unzip Image-Harvester-v0.1.1-source.zip
+cd Image-Harvester-v0.1.1
 ./bin/run-local.sh
 ```
 
@@ -70,6 +74,6 @@ python3 -m unittest discover -s tests -v
 
 ## الحالة والإصدار
 
-- **0.1.0 / أول إصدار وظيفي** — يعمل من المصدر، ويُوزع بحزمة `.deb`.
+- **0.1.1 / تصحيح العربية والأيقونة** — يعمل من المصدر، ويُوزع بحزمة `.deb`.
 - ليس امتداد متصفح. يعمل كبرنامج مستقل على Ubuntu.
 - الرخصة: MIT (الكود)، لا تنطبق الرخصة على الصور المنزّلة من المواقع.
