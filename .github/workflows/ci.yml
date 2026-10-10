@@ -1,0 +1,30 @@
+name: Image Harvester CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  tests-and-deb:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Run engine unit and integration tests
+        run: python3 -m unittest discover -s tests -v
+      - name: Build Debian package
+        run: bash packaging/build-deb.sh "$GITHUB_WORKSPACE/image-harvester_0.1.0-1_all.deb"
+      - name: Inspect package
+        run: |
+          dpkg-deb --info image-harvester_0.1.0-1_all.deb
+          dpkg-deb --contents image-harvester_0.1.0-1_all.deb
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-harvester-debian-v0.1.0
+          path: image-harvester_0.1.0-1_all.deb
+          if-no-files-found: error
