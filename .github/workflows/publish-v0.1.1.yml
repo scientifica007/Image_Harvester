@@ -1,0 +1,69 @@
+name: Publish field-accepted Image Harvester v0.1.1
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-v0.1.1.yml'
+      - 'docs/FIELD-ACCEPTANCE-2026-10-10.md'
+      - 'docs/RELEASE-NOTES-v0.1.1.md'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: image-harvester-v0.1.1-release
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.repository == 'scientifica007/Image_Harvester'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate release source and metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fx '__version__ = "0.1.1"' src/image_harvester/__init__.py
+          grep -q '^Version: 0.1.1-1$' packaging/build-deb.sh
+          test -s docs/FIELD-ACCEPTANCE-2026-10-10.md
+          test -s docs/RELEASE-NOTES-v0.1.1.md
+          test -s packaging/icons/hicolor/128x128/apps/image-harvester.png
+
+      - name: Install GUI test dependencies
+        run: sudo apt-get update && sudo apt-get install -y python3-gi gir1.2-gtk-3.0 xvfb
+
+      - name: Run engine and GUI tests
+        run: xvfb-run -a /usr/bin/python3 -m unittest discover -s tests -v
+
+      - name: Build Debian package
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash packaging/build-deb.sh "$GITHUB_WORKSPACE/image-harvester_0.1.1-1_all.deb"
+          test "$(dpkg-deb -f image-harvester_0.1.1-1_all.deb Version)" = "0.1.1-1"
+          dpkg-deb --contents image-harvester_0.1.1-1_all.deb | grep 'image-harvester.png'
+
+      - name: Publish immutable v0.1.1 release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if gh release view v0.1.1 --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Release v0.1.1 already exists; skipping."
+            exit 0
+          fi
+          if git ls-remote --tags origin 'refs/tags/v0.1.1' | grep -q .; then
+            echo "Tag v0.1.1 already exists without a release. Refusing to replace it."
+            exit 1
+          fi
+          gh release create v0.1.1 image-harvester_0.1.1-1_all.deb \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title 'Image Harvester v0.1.1 — First field-accepted release' \
+            --notes-file docs/RELEASE-NOTES-v0.1.1.md \
+            --latest
