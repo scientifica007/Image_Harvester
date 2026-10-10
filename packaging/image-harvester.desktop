@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Image Harvester
+Name[ar]=حصّاد الصور
+Comment=Find and download images from websites
+Comment[ar]=استخراج وتنزيل الصور من صفحات الويب والمواقع
+Exec=image-harvester
+Icon=image-harvester
+Terminal=false
+Categories=Network;Graphics;
+Keywords=images;website;download;crawler;
